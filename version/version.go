@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"runtime"
 	"runtime/debug"
+	"strings"
 )
 
 var (
@@ -90,6 +91,23 @@ type buildDep struct {
 	*debug.Module
 }
 
-func (d buildDep) String() string                    { return fmt.Sprintf("%s@%s", d.Path, d.Version) }
+func replacesFromDep(slice *[]string, d buildDep) {
+	*slice = append(*slice, fmt.Sprintf("=> %s@%s", d.Path, d.Version))
+
+	if d.Replace != nil {
+		replacesFromDep(slice, buildDep{d.Replace})
+	}
+}
+
+func (d buildDep) String() string {
+	slice := []string{fmt.Sprintf("%s@%s", d.Path, d.Version)}
+
+	if d.Replace != nil {
+		replacesFromDep(&slice, buildDep{d.Replace})
+	}
+
+	return strings.Join(slice, "\n")
+}
+
 func (d buildDep) MarshalJSON() ([]byte, error)      { return json.Marshal(d.String()) }
 func (d buildDep) MarshalYAML() (interface{}, error) { return d.String(), nil }
