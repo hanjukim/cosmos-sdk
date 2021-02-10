@@ -35,3 +35,5 @@ require (
 )
 
 replace github.com/keybase/go-keychain => github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4
+
+replace github.com/tendermint/tendermint => github.com/hanjukim/tendermint v0.33.10-0.20210204080930-764c9def344a
